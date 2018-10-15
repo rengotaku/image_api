@@ -27,7 +27,7 @@ submit.addEventListener('click', () => {
     superagent
       .put('/api')
       // FIXME: 適宜変更する
-      .set('x-api-token', 'test2')
+      .set('x-api-token', 'test')
       // reader.resultはbase64形式の画像データ
       .send({ id, image: reader.result })
       .end((err, res) => {

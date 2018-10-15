@@ -1,0 +1,16 @@
+version: '2'
+services:
+  batch:
+    build: .
+    container_name: "c_image_api"
+    env_file: .env
+    working_dir: $WORK_DIR
+    volumes:
+      - .:$WORK_DIR
+      - $WORK_DIR/node_modules # コンテナ内のnode_moduleをvolumesに登録
+    ports:
+      - $PORT:$PORT
+    entrypoint:
+      - npm
+      - run
+      - start
