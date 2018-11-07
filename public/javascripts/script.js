@@ -31,6 +31,7 @@ submit.addEventListener('click', () => {
       // reader.resultはbase64形式の画像データ
       .send({ id, image: reader.result })
       .end((err, res) => {
+        console.log(JSON.parse(res.text).data.image_path);
         console.log('Finished!');
       });
   });

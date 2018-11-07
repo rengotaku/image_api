@@ -24,14 +24,20 @@ db.serialize(function () {
   });
 });
 
+// HACKME: この変数がrouter内から参照できない
 const UUID_SEED = process.env.UUID_SEED;
 const TOKEN = process.env.TOKEN;
 
 router.get('/:uuid', function(req, res) {
-  db.serialize(() => {
+  const uuid = req.params.uuid;
+  if(!uuid || uuid.length != 36) {
+    return res.status(404).json({ error: 'not found' });
+  }
+
+  return db.serialize(() => {
     // データを取得して表示
-    db.get('SELECT * FROM images WHERE uuid = $uuid', { $uuid: req.params.uuid }, (err, row) => {
-      if(row) {
+    db.get('SELECT * FROM images WHERE uuid = $uuid', { $uuid: uuid }, (err, row) => {
+      if(row && row.image) {
         res.send(row.image);
       } else {
         return res.status(404).json({ error: 'not found' });
@@ -45,14 +51,17 @@ router.put('/', function(req, res, next) {
     return res.status(404).json({ error: 'not found' });
   }
 
+  if(!req.body.image) {
+    return res.status(404).json({ error: 'not found' });
+  }
+
   new Promise(resolve => {
-    // データを取得して表示
     db.get('select count(1) as count from images', {}, (err, row) => {
       resolve(row.count);
     });
   }).then(function(count) {
     db.serialize(() => {
-      var imagePath = uuid(String(++count), UUID_SEED);
+      var imagePath = uuid(String(++count), process.env.UUID_SEED);
 
       // データをDBに保存
       const stmt = db.prepare('INSERT INTO images (id, uuid, image) VALUES (?, ?, ?)');

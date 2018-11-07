@@ -45,7 +45,7 @@ RUN apt-get update \
 
 ENV WORK_DIR=/home/app
 
-WORKDIR WORK_DIR
+WORKDIR $WORK_DIR
 
 ADD package.json .
 
