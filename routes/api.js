@@ -48,11 +48,11 @@ router.get('/:uuid', function(req, res) {
 
 router.put('/', function(req, res, next) {
   if(!req.headers['x-api-token'] || req.headers['x-api-token'] != process.env.TOKEN){
-    return res.status(404).json({ error: 'not found' });
+    return res.status(404).json({ error: 'not found!' });
   }
 
   if(!req.body.image) {
-    return res.status(404).json({ error: 'not found' });
+    return res.status(404).json({ error: 'not found!!' });
   }
 
   new Promise(resolve => {
