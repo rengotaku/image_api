@@ -19,7 +19,7 @@ db.serialize(function () {
 
   create.then(function (exists) {
     if (!exists) {
-      db.run('CREATE TABLE images (id integer primary key, uuid string, image BLOB)');
+      db.run('CREATE TABLE images (id integer primary key, uuid string, image BLOB, content_type string)');
     }
   });
 });
@@ -55,6 +55,10 @@ router.put('/', function(req, res, next) {
     return res.status(404).json({ error: 'not found!!' });
   }
 
+  const fileData = req.body.image;
+  const decodedFile = new Buffer(fileData.replace(/^data:\w+\/\w+;base64,/, ''), 'base64');
+  const contentType = fileData.toString().slice(fileData.indexOf(':') + 1, fileData.indexOf(';'));
+
   new Promise(resolve => {
     db.get('select count(1) as count from images', {}, (err, row) => {
       resolve(row.count);
@@ -64,8 +68,8 @@ router.put('/', function(req, res, next) {
       var imagePath = uuid(String(++count), process.env.UUID_SEED);
 
       // データをDBに保存
-      const stmt = db.prepare('INSERT INTO images (id, uuid, image) VALUES (?, ?, ?)');
-      stmt.run(count, imagePath, req.body.image);
+      const stmt = db.prepare('INSERT INTO images (id, uuid, image, content_type) VALUES (?, ?, ?, ?)');
+      stmt.run(count, imagePath, decodedFile, contentType);
       stmt.finalize();
 
       res.json({ data: { image_path: imagePath } });
