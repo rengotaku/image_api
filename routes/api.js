@@ -77,4 +77,35 @@ router.put('/', function(req, res, next) {
   });
 });
 
+router.delete('/:uuid', function(req, res) {
+  // HACKME: common化
+  if(!req.headers['x-api-token'] || req.headers['x-api-token'] != process.env.TOKEN){
+    return res.status(404).json({ error: 'not found!' });
+  }
+
+  const uuid = req.params.uuid;
+  if(!uuid || uuid.length != 36) {
+    return res.status(404).json({ error: 'not found!!' });
+  }
+
+  new Promise(resolve => {
+    db.get('select count(1) as count from images where uuid = ?', uuid, (err, row) => {
+      resolve(row.count);
+    });
+  }).then(function(count) {
+    if(count == 0) {
+      return res.status(404).json({ error: 'not found!!!' });
+    }
+
+    db.serialize(() => {
+      db.run('DELETE FROM images WHERE uuid = ?', uuid, function(err) {
+        if (err) {
+          return res.status(500).json({ error: err.message });
+        }
+        res.json({ data: { delete_rows: this.changes } });
+      });
+    });
+  });
+});
+
 module.exports = router;
