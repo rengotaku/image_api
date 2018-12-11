@@ -1,1 +1,0 @@
-2 5 * * * $WORK_DIR/sys-config/backup_to_gcp.sh $WORK_DIR/db/db.sqlite3 #Upload file which include image to GCP.
