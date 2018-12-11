@@ -41,13 +41,28 @@ RUN apt-get update \
       libnss3 \
       lsb-release \
       xdg-utils \
-      wget
+      wget \
+      cron
+
+RUN apt-get update \
+ && apt-get install -y \
+      libssl-dev \
+      python-pip \
+      python-dev \
+      libffi-dev \
+      python-crypto \
+      python-openssl
+
+RUN pip install --upgrade setuptools \
+    pip install -U gsutil
 
 ENV WORK_DIR=/home/app
 
 WORKDIR $WORK_DIR
 
-ADD package.json .
+COPY package* ./
 
 RUN npm install \
     npm cache clean --force # npmで不要なファイルの削除
+
+COPY sys-config/image_api-cron /etc/cron.d/
