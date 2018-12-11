@@ -47,7 +47,7 @@ ENV WORK_DIR=/home/app
 
 WORKDIR $WORK_DIR
 
-ADD package.json .
+COPY package*.json ./
 
 RUN npm install \
     npm cache clean --force # npmで不要なファイルの削除
