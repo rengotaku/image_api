@@ -1,5 +1,7 @@
 FROM alpine:latest
 
+ENV NODE_ENV development
+
 RUN apk add --update --no-cache nodejs \
         nodejs-npm \
         binutils-gold \
@@ -17,5 +19,4 @@ COPY package*.json ./
 RUN npm set progress=false && \
     npm config set depth 0 && \
     npm install && \
-    npm cache clean --force && \
-    npm uninstall -g npm
+    npm cache clean --force

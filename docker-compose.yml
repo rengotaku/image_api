@@ -1,16 +1,24 @@
-version: '2'
+version: '3'
 services:
-  batch:
-    build: .
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.${ENV}
     container_name: "c_image_api"
-    env_file: .env
-    working_dir: $WORK_DIR
+    environment:
+      TOKEN: ${IMAGE_API_TOKEN}
+      UUID_SEED: ${UUID_SEED}
+    working_dir: /src
     volumes:
-      - .:$WORK_DIR
-      - $WORK_DIR/node_modules # コンテナ内のnode_moduleをvolumesに登録
+      - ./image_api:/src
+      - node_modules:/src/node_modules:cached
     ports:
-      - $PORT:$PORT
-    entrypoint:
-      - npm
-      - run
-      - start
+      - 3020:3000
+    entrypoint: >
+      node
+      ./bin/www
+    logging:
+      options:
+        max-size: '10m'
+        max-file: '15'
+      driver: json-file
