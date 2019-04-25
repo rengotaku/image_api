@@ -9,7 +9,6 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var apiRouter = require('./routes/api');
 
-require('dotenv').config();
 const uuidv5 = require('uuid/v5');
 
 var app = express();
