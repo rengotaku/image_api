@@ -1,28 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const uuid = require('uuid/v5');
-const sqlite3 = require('sqlite3').verbose();
-// FIXME: 別ファイルに分ける
-// https://kuroeveryday.blogspot.com/2016/05/nodejs-sqlite3.html
-const db = new sqlite3.Database('db/db.sqlite3');
-// FIXME: 上記のモジュールに含める
-// 初期化
-db.serialize(function () {
-  var create = new Promise(function (resolve, reject) {
-    db.get('select count(*) from sqlite_master where type="table" and name=$name',{ $name: 'images' }, function (err, res) {
-      var exists = false;
-      if (0 < res['count(*)']) { exists = true; }
-
-      resolve(exists);
-    });
-  });
-
-  create.then(function (exists) {
-    if (!exists) {
-      db.run('CREATE TABLE images (id integer primary key, uuid string, image BLOB, content_type string)');
-    }
-  });
-});
+const db = require('../lib/database.js');
 
 // HACKME: この変数がrouter内から参照できない
 const UUID_SEED = process.env.UUID_SEED;

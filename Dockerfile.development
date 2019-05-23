@@ -12,7 +12,8 @@ RUN apk add --update --no-cache nodejs \
         libgcc \
         linux-headers \
         make \
-        python
+        python \
+        sqlite
 
 COPY package*.json ./
 
