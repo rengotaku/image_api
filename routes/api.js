@@ -10,7 +10,7 @@ const TOKEN = process.env.TOKEN;
 router.get('/:uuid', function(req, res) {
   const uuid = req.params.uuid;
   if(!uuid || uuid.length != 36) {
-    return res.status(404).json({ error: 'not found' });
+    return res.status(400).json({ error: 'Valid uudi format!' });
   }
 
   return db.serialize(() => {
@@ -19,7 +19,7 @@ router.get('/:uuid', function(req, res) {
       if(row && row.image) {
         res.send(row.image);
       } else {
-        return res.status(404).json({ error: 'not found' });
+        return res.status(404).json({ error: 'Can not find image!' });
       }
     });
   });
@@ -27,11 +27,11 @@ router.get('/:uuid', function(req, res) {
 
 router.put('/', function(req, res, next) {
   if(!req.headers['x-api-token'] || req.headers['x-api-token'] != process.env.TOKEN){
-    return res.status(404).json({ error: 'not found!' });
+    return res.status(403).json({ error: 'Valid token!' });
   }
 
   if(!req.body.image) {
-    return res.status(404).json({ error: 'not found!!' });
+    return res.status(400).json({ error: 'Valid body!' });
   }
 
   const fileData = req.body.image;
@@ -59,12 +59,12 @@ router.put('/', function(req, res, next) {
 router.delete('/:uuid', function(req, res) {
   // HACKME: common化
   if(!req.headers['x-api-token'] || req.headers['x-api-token'] != process.env.TOKEN){
-    return res.status(404).json({ error: 'not found!' });
+    return res.status(403).json({ error: 'Valid token!' });
   }
 
   const uuid = req.params.uuid;
   if(!uuid || uuid.length != 36) {
-    return res.status(404).json({ error: 'not found!!' });
+    return res.status(400).json({ error: 'Valid uudi format!' });
   }
 
   new Promise(resolve => {
@@ -73,7 +73,7 @@ router.delete('/:uuid', function(req, res) {
     });
   }).then(function(count) {
     if(count == 0) {
-      return res.status(404).json({ error: 'not found!!!' });
+      return res.status(404).json({ error: 'Can not find image!' });
     }
 
     db.serialize(() => {
